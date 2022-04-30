@@ -40,7 +40,7 @@ unsigned long long int hash_function(char *str) {
 
     // Loop through the input string
     while ((c = *str++) != 0) {
-        hash = ((hash << 5) + hash) + c; // hash * 33 + c
+        hash = ((hash << 5) + hash) + c; // hash = hash * 33 + c
     }
 
     return hash;
