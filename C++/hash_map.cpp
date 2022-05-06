@@ -7,39 +7,14 @@
 #include <time.h>
 #include "hash_map.hpp"
 
-using namespace std;
-
-template <class T>
-class HashVal {
-        T value;
-        string key;
-
-    public:
-        HashVal(string k, T val) {
-            key = k;
-            value = val;
-        }
-
-        T get_value() {
-            return value;
-        }
-
-        void set_value(T val) {
-            value = val;
-        }
-
-        string get_key() {
-            return key;
-        }
-
-        void set_key(string k) {
-            key = k;
-        }
-};
-
 template <class T>
 class HashMap {
-    vector< vector< HashVal<T> > > map;
+    typedef struct {
+        T value;
+        std::string key;
+    } HashVal;
+
+    std::vector< std::vector<HashVal> > map;
     int capacity;
 
     public:
@@ -47,7 +22,7 @@ class HashMap {
             capacity = 17;
 
             for (int i = 0; i < capacity; i++) {
-                vector< HashVal<T> > new_val;
+                std::vector<HashVal> new_val;
                 map.push_back(new_val);
             }
         }
@@ -55,7 +30,7 @@ class HashMap {
         // hash algorithm: djb2 by Dan Bernstein
         // http://www.cse.yorku.ca/~oz/hash.html
         // (Found from https://stackoverflow.com/questions/7666509/hash-function-for-string)
-        int hash_function(string key) {
+        int hash_function(std::string key) {
             int hash = 0;
             
             // Loop through the characters of the key
@@ -68,9 +43,11 @@ class HashMap {
             return hash % capacity;
         }
 
-        void put(string key, T value) {
-            // Create a new HashVal object
-            HashVal<T> new_val(key, value);
+        void put(std::string key, T value) {
+            // Create a new HashVal instance
+            HashVal new_val;
+            new_val.key = key;
+            new_val.value = value;
 
             // If the map is more than 60% full, we need to increase the capacity of the map
             if (size() >= 0.6 * capacity) {
@@ -84,10 +61,10 @@ class HashMap {
             map.at(index).push_back(new_val);
         }
 
-        T get(string key) {
+        T get(std::string key) {
             // Calculate the position of the value in the map and get the vector
             int index = hash_function(key);
-            vector< HashVal<T> > val = map.at(index);
+            std::vector<HashVal> val = map.at(index);
 
             // If the vector is empty, the value we're searching for clearly isn't there
             if (val.empty()) {
@@ -108,7 +85,7 @@ class HashMap {
 
         void increase_capacity() {
             // Create a vector to hold the non-empty members of the map
-            vector< vector< HashVal<T> > > current_data;
+            std::vector< std::vector<HashVal> > current_data;
 
             // Loop through the map
             for (int i = 0; i < capacity; i++) {
@@ -140,17 +117,17 @@ class HashMap {
 
             // Loop from the old capacity to the new (prime) capacity, adding empty vectors to the map
             for (int i = (capacity - prime_diff) / 2; i < capacity; i++) {
-                vector< HashVal<T> > new_val;
+                std::vector<HashVal> new_val;
                 map.push_back(new_val);
             }
 
             // Now we can place the data back in their new locations
             for (int i = 0; i < current_data.size(); i++) {
-                vector< HashVal<T> > val = current_data.at(i);
+                std::vector<HashVal> val = current_data.at(i);
 
                 // Loop through the elements of val and place each HashVal in their new position
                 for (int j = 0; j < val.size(); j++) {
-                    int index = hash_function(val.at(j).get_key());
+                    int index = hash_function(val.at(j).key);
                     map.at(index).push_back(val.at(j));
                 }
             }
@@ -171,26 +148,26 @@ class HashMap {
 
         void print() {
             // Pretty print the contents of the entire map
-            cout << "\nCapacity: " << capacity << '\n';
+            std::cout << "\nCapacity: " << capacity << '\n';
 
             // Loop through the map
             for (int i = 0; i < capacity; i++) {
                 // Get the current vector
-                vector< HashVal<T> > val = map.at(i);
+                std::vector<HashVal> val = map.at(i);
 
                 // If the vector is empty, print an "X" to indicate that the vector is empty
                 if (val.empty()) {
-                    cout << "X\n";
+                    std::cout << "X\n";
 
                 } else {
                     // If the vector is non-empty, loop through the vector and print each key-value pair
                     for (int j = 0; j < val.size(); j++) {
-                        cout << "{" << val.at(j).get_key() << ", " << val.at(j).get_value() << "} ";
+                        std::cout << "{" << val.at(j).key << ", " << val.at(j).value << "} ";
                     }
-                    cout << "\n";
+                    std::cout << "\n";
                 }
             }
-            cout << "\n";
+            std::cout << "\n";
         }
 
         int get_capacity() {
@@ -198,14 +175,14 @@ class HashMap {
         }
 };
 
-string gen_key(const int len) {
+std::string gen_key(const int len) {
     // Randomly generate an alphanumeric string of length given by the user
     // https://stackoverflow.com/questions/440133/how-do-i-create-a-random-alpha-numeric-string-in-c
     static const char alphanum[] =
         "0123456789"
         "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         "abcdefghijklmnopqrstuvwxyz";
-    string tmp_s;
+    std::string tmp_s;
     tmp_s.reserve(len);
 
     for (int i = 0; i < len; ++i) {
@@ -219,13 +196,13 @@ int main() {
     srand(time(0));
 
     // Ceate a new HashMap to hold strings
-    HashMap<string> new_map;
+    HashMap<std::string> new_map;
 
     int key_len = 5;
 
     // Add 20 different values with randomly generated 5 character keys
     for (int i = 0; i < 20; i++) {
-        new_map.put(gen_key(key_len), to_string(i));
+        new_map.put(gen_key(key_len), std::to_string(i));
 
         if (i == 9 || i == 19) {
             // Pretty print the map after adding the first 10 and 20 values
