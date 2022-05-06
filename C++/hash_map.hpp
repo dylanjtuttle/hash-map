@@ -75,18 +75,18 @@ T HashMap<T>::get(std::string key) {
 
     // If the vector is empty, the value we're searching for clearly isn't there
     if (val.empty()) {
-        return nullptr;
+        throw std::invalid_argument("Value not found in map");
     } else {
         // If the vector is non-empty, search through it to see if we can find the value
         for (int i = 0; i < val.size(); i++) {
             // If the key of this HashVal matches the key we are searching on, return the HashVal's value
             if (val.at(i).key == key) {
-                return val.at(i).value;
+                return (val.at(i).value);
             }
         }
         // If we have looped through the whole vector and didn't find any matching HashVals,
         // the value we're searching for isn't there
-        return nullptr;
+        throw std::invalid_argument("Value not found in map");
     }
 }
 

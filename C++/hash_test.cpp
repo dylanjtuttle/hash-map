@@ -25,11 +25,16 @@ int main() {
     // Ceate a new HashMap to hold strings
     HashMap<std::string> new_map;
 
+    // Length of key to generate
     int key_len = 5;
+
+    std::string key_14;
+    std::string val_14;
 
     // Add 20 different values with randomly generated 5 character keys
     for (int i = 0; i < 20; i++) {
-        new_map.put(gen_key(key_len), std::to_string(i));
+        std::string key = gen_key(key_len);
+        new_map.put(key, std::to_string(i));
 
         if (i == 9 || i == 19) {
             // Pretty print the map after adding the first 10 and 20 values
@@ -37,6 +42,19 @@ int main() {
             // the capacity will be increased
             new_map.print();
         }
+
+        if (i == 14) {
+            key_14 = key;
+            val_14 = std::to_string(i);
+        }
+    }
+
+    std::cout << "Value for key \"" << key_14 << "\" (should be " << val_14 << "): ";
+
+    try {
+        std::cout << new_map.get(key_14) << "\n\n";
+    } catch (std::invalid_argument& e) {
+        std::cerr << "Not found :(\n\n";
     }
 
     return 0;
