@@ -1,10 +1,6 @@
 #include <iostream>
 #include <vector>
-#include <memory>
 #include <string>
-#include <ctime>
-#include <unistd.h>
-#include <time.h>
 #include "hash_map.hpp"
 
 template <class T>
